@@ -1,24 +1,25 @@
-import os
+import warnings
+from datetime import datetime
+from pathlib import Path
 
-import numpy as np
+import numpy.typing as npt
 import sounddevice as sd
-from scipy.io.wavfile import write as wavwrite
+import soundfile as sf
+
+from stimulus import StimulusParameters
+
+_STIMULUS_FN = "stimulus.wav"
+_RIR_FN = "rir.wav"
+_RIR_NONLINEAR_FN = "rir_nonlinear.json"
+_PARAMETER_FN = "parameters.json"
 
 
 # --------------------------
-def record(testsignal, fs, input_channels, output_channels):
-
-    sd.default.samplerate = fs
-    sd.default.dtype = "float32"
-    print("Input channels:", input_channels)
-    print("Output channels:", output_channels)
+def record(testsignal: npt.NDArray, fs: int, number_of_playback_channels: int, device: int):
 
     # Start the recording
     recorded = sd.playrec(
-        testsignal,
-        samplerate=fs,
-        input_mapping=input_channels,
-        output_mapping=output_channels,
+        testsignal, samplerate=fs, channels=number_of_playback_channels, device=device, dtype="float64"
     )
     sd.wait()
 
@@ -26,34 +27,24 @@ def record(testsignal, fs, input_channels, output_channels):
 
 
 # --------------------------
-def saverecording(rir, rir_to_save, testsignal, recorded, fs):
+def save_files(
+    output_dir: Path,
+    stimulus_signal: npt.NDArray,
+    rir: npt.NDArray,
+    rir_nonlinear: npt.NDArray,
+    parameters: StimulusParameters,
+):
+    timestamp_str = f"{int(datetime.now().timestamp())}"
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True)
+    else:
+        warnings.warn(f"Directory {output_dir} is not empty. Files are timestamped.")
 
-    dirflag = False
-    counter = 1
-    dirname = "recorded/newrir1"
-    while dirflag:
-        if os.path.exists(dirname):
-            counter = counter + 1
-            dirname = "recorded/newrir" + str(counter)
-        else:
-            os.mkdir(dirname)
-            dirflag = True
+    sf.write(_format_with_timestamp(output_dir, timestamp_str, _STIMULUS_FN), stimulus_signal, parameters.fs)
+    sf.write(_format_with_timestamp(output_dir, timestamp_str, _RIR_FN), rir, parameters.fs)
+    sf.write(_format_with_timestamp(output_dir, timestamp_str, _RIR_NONLINEAR_FN), rir_nonlinear, parameters.fs)
+    parameters.save_to_json(_format_with_timestamp(output_dir, timestamp_str, _PARAMETER_FN))
 
-    # Saving the rirs and the captured signals
-    np.save(dirname + "/rir.npy", rir)
-    np.save(dirname + "/rirac.npy", rir_to_save)
-    wavwrite(dirname + "/sigtest.wav", fs, testsignal)
 
-    for idx in range(recorded.shape[1]):
-        wavwrite(dirname + "/sigrec" + str(idx + 1) + ".wav", fs, recorded[:, idx])
-        wavwrite(dirname + "/rir" + str(idx + 1) + ".wav", fs, rir[:, idx])
-
-    # Save in the recorded/lastRecording for a quick check
-    np.save("recorded/lastRecording/rir.npy", rir)
-    np.save("recorded/lastRecording/rirac.npy", rir_to_save)
-    wavwrite("recorded/lastRecording/sigtest.wav", fs, testsignal)
-    for idx in range(recorded.shape[1]):
-        wavwrite("sigrec" + str(idx + 1) + ".wav", fs, recorded[:, idx])
-        wavwrite(dirname + "/rir" + str(idx + 1) + ".wav", fs, rir[:, idx])
-
-    print("Success! Recording saved in directory " + dirname)
+def _format_with_timestamp(output_dir: Path, timestamp: str, fn: str):
+    return output_dir / f"{timestamp}-{fn}"

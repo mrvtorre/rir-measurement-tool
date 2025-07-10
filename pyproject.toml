@@ -5,6 +5,7 @@ description = "A RIR measurement tool using sounddevice"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "click>=8.2.1",
     "matplotlib>=3.10.3",
     "numpy>=2.3.1",
     "scipy>=1.16.0",
