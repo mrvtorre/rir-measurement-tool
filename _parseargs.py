@@ -8,16 +8,20 @@ import os
 
 import numpy as np
 
+_DEFAULTS_DIR = "_data/defaults.npy"
+_ARGUMENT_DESCRIPTION = """
+Setting the parameters for RIR measurement using exponential sine sweep
+----------------------------------------------------------------------
+"""
+
 
 # === FUNCTION: Parsing command line arguments
 def _parse():
 
     # Load the defaults
-    defaults = np.load("_data/defaults.npy", allow_pickle=True).item()
+    defaults = np.load(_DEFAULTS_DIR, allow_pickle=True).item()
 
-    parser = argparse.ArgumentParser(
-        description="Setting the parameters for RIR measurement using exponential sine sweep \n ----------------------------------------------------------------------"
-    )
+    parser = argparse.ArgumentParser(description=_ARGUMENT_DESCRIPTION)
     # ---
     parser.add_argument(
         "-f",
@@ -43,7 +47,8 @@ def _parse():
         default=defaults["reps"],
     )
     # ---
-    # parser.add_argument("-fr", "--frange", type =  tuple, help = "Frequency range of the sweep (f_min, f_max). Default: (0.01,20000) Hz.", default = (0.01,20000))
+    # parser.add_argument("-fr", "--frange", type =  tuple, help = "Frequency range of the sweep (f_min, f_max).
+    # Default: (0.01,20000) Hz.", default = (0.01,20000))
     # ---
     parser.add_argument(
         "-a",
@@ -133,7 +138,7 @@ def _parse():
 
     parser.add_argument(
         "--test",
-        help="Just for debugging: check the output of deconvolution applied directly to the computer-generated sinesweep",
+        help="Check the output of deconvolution applied directly to the computer-generated sinesweep",
         action="store_true",
     )
 
@@ -148,7 +153,7 @@ def _parse():
 
 def _defaults(args):
 
-    if args.listdev == False and args.defaults == False:
+    if not args.listdev and not args.defaults:
         defaults = {
             "amplitude": args.amplitude,
             "duration": args.duration,
@@ -162,7 +167,7 @@ def _defaults(args):
             "outputdevice": args.outputdevice,
             "sweeprange": args.sweeprange,
         }
-        np.save("_data/defaults.npy", defaults)
+        np.save(_DEFAULTS_DIR, defaults)
 
 
 # -------------------------------------------------------------
@@ -171,12 +176,12 @@ def _defaults(args):
 
 def _checkdefaults():
 
-    flag_defaultsInitialized = True
+    flag_defaults_initialized = True
 
     if not os.path.exists("_data"):
         os.makedirs("_data")
 
-    if not os.path.exists("_data/defaults.npy"):
+    if not os.path.exists(_DEFAULTS_DIR):
         print("Default settings not detected. Creating a defaults file in _data")
         defaults = {
             "amplitude": 0.2,
@@ -191,7 +196,7 @@ def _checkdefaults():
             "outputdevice": 1,
             "sweeprange": [0, 0],
         }
-        np.save("_data/defaults.npy", defaults)
-        flag_defaultsInitialized = False
+        np.save(_DEFAULTS_DIR, defaults)
+        flag_defaults_initialized = False
 
-    return flag_defaultsInitialized
+    return flag_defaults_initialized

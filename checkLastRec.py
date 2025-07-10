@@ -2,7 +2,6 @@
 
 # Vizualizing the results from the last recording
 
-import os
 
 import numpy as np
 import soundfile as sf  # for loading wavfiles
@@ -63,9 +62,8 @@ for idx in range(numplots):
 
 # Spectrograms of the emitted and the recorded signals
 # add a tiny amount of noise to avoid zeros
-tmp = np.random.rand(
-    sigtest.shape[0],
-)
+random_generator = np.random.default_rng(42)
+tmp = random_generator.random(sigtest.shape[0])
 sigtest = sigtest + 0.00001 * tmp
 
 nperseg = 2**11

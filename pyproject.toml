@@ -9,6 +9,7 @@ dependencies = [
     "numpy>=2.3.1",
     "scipy>=1.16.0",
     "sounddevice>=0.5.2",
+    "soundfile>=0.13.1",
 ]
 
 [tool.black]
@@ -18,3 +19,30 @@ line-length = 120
 profile = "black"
 line_length = 120
 
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",   # pycodestyle
+    "F",   # pyflakes
+    "A",   # flake8-builtins
+    "PLC", # pylint convention
+    "PLE", # pylint error
+    "PLR", # pylint refactor
+    "PLW", # pylint warning
+    "I",   # isort
+    "RUF", # RUFF-specific
+    "D",   # pydocstyle
+    "NPY", # numpy-specific rules
+    "N",   # pep8-naming
+]
+
+ignore = ["D100", "D103", "D104"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[dependency-groups]
+dev = ["black>=25.1.0", "isort>=6.0.1", "ruff>=0.12.2"]

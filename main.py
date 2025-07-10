@@ -3,7 +3,6 @@
 # ----------------------------------------------------------------
 # Author:                    Maja Taseska, ESAT-STADIUS, KU LEUVEN
 # ================================================================
-import os
 
 import numpy as np
 import sounddevice as sd
@@ -13,31 +12,29 @@ import _parseargs as parse
 
 # modules from this software
 import stimulus as stim
-import utils as utils
+import utils
 
 
 def main():
     # --- Parse command line arguments and check defaults
-    flag_defaultsInitialized = parse._checkdefaults()
+    flag_defaults_initialized = parse._checkdefaults()
     args = parse._parse()
     parse._defaults(args)
     # -------------------------------
 
-    if flag_defaultsInitialized == True:
-
-        if args.listdev == True:
-
+    if flag_defaults_initialized:
+        if args.listdev:
             print(sd.query_devices())
             sd.check_input_settings()
             sd.check_output_settings()
             print("Default input and output device: ", sd.default.device)
 
-        elif args.defaults == True:
+        elif args.defaults:
             aa = np.load("_data/defaults.npy", allow_pickle=True).item()
             for i in aa:
                 print(i + " => " + str(aa[i]))
 
-        elif args.setdev == True:
+        elif args.setdev:
 
             sd.default.device[0] = args.inputdevice
             sd.default.device[1] = args.outputdevice
@@ -48,7 +45,7 @@ def main():
             print("Sucessfully selected audio devices. Ready to record.")
             parse._defaults(args)
 
-        elif args.test == True:
+        elif args.test:
 
             deltapeak = stim.test_deconvolution(args)
             plt.plot(deltapeak)
@@ -57,8 +54,8 @@ def main():
         else:
 
             # Create a test signal object, and generate the excitation
-            testStimulus = stim.stimulus("sinesweep", args.fs)
-            testStimulus.generate(
+            test_stimulus = stim.Stimulus("sinesweep", args.fs)
+            test_stimulus.generate(
                 args.fs,
                 args.duration,
                 args.amplitude,
@@ -70,26 +67,26 @@ def main():
 
             # Record
             recorded = utils.record(
-                testStimulus.signal,
+                test_stimulus.signal,
                 args.fs,
                 args.inputChannelMap,
                 args.outputChannelMap,
             )
 
             # Deconvolve
-            RIR = testStimulus.deconvolve(recorded)
+            rir = test_stimulus.deconvolve(recorded)
 
             # Truncate
-            lenRIR = 1.2
-            startId = testStimulus.signal.shape[0] - args.endsilence * args.fs - 1
-            endId = startId + int(lenRIR * args.fs)
+            len_rir = 1.2
+            start_id = test_stimulus.signal.shape[0] - args.endsilence * args.fs - 1
+            end_id = start_id + int(len_rir * args.fs)
             # save some more samples before linear part to check for nonlinearities
-            startIdToSave = startId - int(args.fs / 2)
-            RIRtoSave = RIR[startIdToSave:endId, :]
-            RIR = RIR[startId:endId, :]
+            start_id_to_save = start_id - int(args.fs / 2)
+            rir_to_save = rir[start_id_to_save:end_id, :]
+            rir = rir[start_id:end_id, :]
 
-            # Save recordings and RIRs
-            utils.saverecording(RIR, RIRtoSave, testStimulus.signal, recorded, args.fs)
+            # Save recordings and rirs
+            utils.saverecording(rir, rir_to_save, test_stimulus.signal, recorded, args.fs)
 
 
 if __name__ == "__main__":
