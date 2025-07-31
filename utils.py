@@ -10,7 +10,7 @@ from stimulus import StimulusParameters
 
 _STIMULUS_FN = "stimulus.wav"
 _RIR_FN = "rir.wav"
-_RIR_NONLINEAR_FN = "rir_nonlinear.json"
+_RIR_NONLINEAR_FN = "rir_nonlinear.wav"
 _PARAMETER_FN = "parameters.json"
 
 

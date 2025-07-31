@@ -104,3 +104,7 @@ python measure.py -dur 2 -r 2 -a 0.5 -ss 2 -es 1 -chin 1  -chou 2
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Remarks
+
+- ASIO sounddevices are by default not supported (see [sounddevice issue #496](https://github.com/spatialaudio/python-sounddevice/issues/496)). If ASIO devices are needed, set the `SD_ENABLE_ASIO` environment variable (see [ASIO support](https://python-sounddevice.readthedocs.io/en/0.5.1/installation.html#asio-support)).

@@ -4,11 +4,14 @@
 # Author:                    Maja Taseska, ESAT-STADIUS, KU LEUVEN
 # Modified by:               Mike Vantorre
 # ================================================================
+import os
 from pathlib import Path
 
 import click
-import sounddevice as sd
 from matplotlib import pyplot as plt
+
+os.environ["SD_ENABLE_ASIO"] = "1"
+import sounddevice as sd
 
 # modules from this software
 import stimulus
@@ -116,10 +119,10 @@ def measure(  # noqa: PLR0913
     rir = test_stimulus.deconvolve(recorded, parameters)
 
     # Truncate
-    start_id = test_stimulus.signal.shape[0] - parameters.silence_at_end_seconds * parameters.fs - 1
-    end_id = start_id + int(_LEN_RIR_S * parameters.fs)
+    start_id = int(test_stimulus.signal.shape[0] - parameters.silence_at_end_seconds * parameters.fs - 1)
+    end_id = int(start_id + int(_LEN_RIR_S * parameters.fs))
     # save some more samples before linear part to check for nonlinearities
-    start_id_to_save = start_id - int(parameters.fs / 2)
+    start_id_to_save = int(start_id - int(parameters.fs / 2))
     rir_nonlinear = rir[start_id_to_save:end_id, :]
     rir = rir[start_id:end_id, :]
 
