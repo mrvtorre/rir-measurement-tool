@@ -16,6 +16,7 @@ import sounddevice as sd
 # modules from this software
 import stimulus
 import utils
+from check_last_recording import check_last_recording
 
 _DEFAULT_PARAMS = stimulus.StimulusParameters()
 _LEN_RIR_S = 1.2
@@ -128,6 +129,8 @@ def measure(  # noqa: PLR0913
 
     # Save recordings and rirs
     utils.save_files(output_dir, test_stimulus.signal, recorded, rir, rir_nonlinear, parameters)
+
+    check_last_recording(test_stimulus.signal, recorded, rir, parameters)
 
 
 if __name__ == "__main__":
