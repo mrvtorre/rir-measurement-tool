@@ -127,7 +127,7 @@ def measure(  # noqa: PLR0913
     rir = rir[start_id:end_id, :]
 
     # Save recordings and rirs
-    utils.save_files(output_dir, test_stimulus.signal, rir, rir_nonlinear, parameters)
+    utils.save_files(output_dir, test_stimulus.signal, recorded, rir, rir_nonlinear, parameters)
 
 
 if __name__ == "__main__":
