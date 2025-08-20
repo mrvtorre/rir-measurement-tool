@@ -78,7 +78,7 @@ def test_deconv():
 )
 @click.option("--silence_at_end_seconds", default=_DEFAULT_PARAMS.silence_at_end_seconds, type=float, show_default=True)
 @click.option("--sweep_range", default=_DEFAULT_PARAMS.sweep_range, type=click.Tuple([float, float]), show_default=True)
-@click.option("--number_of_playback_channels", "-n_channels", type=int, prompt=True)
+@click.option("--number_of_recording_channels", "-n_channels", type=int, prompt=True)
 @click.argument("output_dir", type=click.Path(file_okay=False, dir_okay=True, resolve_path=True, path_type=Path))
 def measure(  # noqa: PLR0913
     fs: int,
@@ -87,7 +87,7 @@ def measure(  # noqa: PLR0913
     silence_at_start_seconds: float,
     silence_at_end_seconds: float,
     sweep_range: tuple,
-    number_of_playback_channels: int,
+    number_of_recording_channels: int,
     output_dir: Path,
 ):
     """Run the measure script: generate a stimulus signal, perform a recording, and deconvolve into responses."""
@@ -112,7 +112,7 @@ def measure(  # noqa: PLR0913
     recorded = utils.record(
         test_stimulus.signal,
         parameters.fs,
-        number_of_playback_channels,
+        number_of_recording_channels,
         device,
     )
 

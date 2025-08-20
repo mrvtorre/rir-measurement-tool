@@ -16,11 +16,11 @@ _PARAMETER_FN = "parameters.json"
 
 
 # --------------------------
-def record(testsignal: npt.NDArray, fs: int, number_of_playback_channels: int, device: int):
+def record(testsignal: npt.NDArray, fs: int, number_of_recording_channels: int, device: int):
 
     # Start the recording
     recorded = sd.playrec(
-        testsignal, samplerate=fs, channels=number_of_playback_channels, device=device, dtype="float64"
+        testsignal, samplerate=fs, channels=number_of_recording_channels, device=device, dtype="float64"
     )
     sd.wait()
 
