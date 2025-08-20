@@ -13,6 +13,7 @@ _RECORDED_FN = "recorded.wav"
 _RIR_FN = "rir.wav"
 _RIR_NONLINEAR_FN = "rir_nonlinear.wav"
 _PARAMETER_FN = "parameters.json"
+_WAV_SUBTYPE = "PCM_24"
 
 
 # --------------------------
@@ -42,10 +43,30 @@ def save_files(  # noqa: PLR0913
     else:
         warnings.warn(f"Directory {output_dir} is not empty. Files are timestamped.")
 
-    sf.write(_format_with_timestamp(output_dir, timestamp_str, _STIMULUS_FN), stimulus_signal, parameters.fs)
-    sf.write(_format_with_timestamp(output_dir, timestamp_str, _RECORDED_FN), recorded, parameters.fs)
-    sf.write(_format_with_timestamp(output_dir, timestamp_str, _RIR_FN), rir, parameters.fs)
-    sf.write(_format_with_timestamp(output_dir, timestamp_str, _RIR_NONLINEAR_FN), rir_nonlinear, parameters.fs)
+    sf.write(
+        _format_with_timestamp(output_dir, timestamp_str, _STIMULUS_FN),
+        stimulus_signal,
+        parameters.fs,
+        subtype=_WAV_SUBTYPE,
+    )
+    sf.write(
+        _format_with_timestamp(output_dir, timestamp_str, _RECORDED_FN),
+        recorded,
+        parameters.fs,
+        subtype=_WAV_SUBTYPE,
+    )
+    sf.write(
+        _format_with_timestamp(output_dir, timestamp_str, _RIR_FN),
+        rir,
+        parameters.fs,
+        subtype=_WAV_SUBTYPE,
+    )
+    sf.write(
+        _format_with_timestamp(output_dir, timestamp_str, _RIR_NONLINEAR_FN),
+        rir_nonlinear,
+        parameters.fs,
+        subtype=_WAV_SUBTYPE,
+    )
     parameters.save_to_json(_format_with_timestamp(output_dir, timestamp_str, _PARAMETER_FN))
 
 
