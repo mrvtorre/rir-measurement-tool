@@ -43,31 +43,17 @@ def save_files(  # noqa: PLR0913
     else:
         warnings.warn(f"Directory {output_dir} is not empty. Files are timestamped.")
 
-    sf.write(
-        _format_with_timestamp(output_dir, timestamp_str, _STIMULUS_FN),
-        stimulus_signal,
-        parameters.fs,
-        subtype=_WAV_SUBTYPE,
-    )
-    sf.write(
-        _format_with_timestamp(output_dir, timestamp_str, _RECORDED_FN),
-        recorded,
-        parameters.fs,
-        subtype=_WAV_SUBTYPE,
-    )
-    sf.write(
-        _format_with_timestamp(output_dir, timestamp_str, _RIR_FN),
-        rir,
-        parameters.fs,
-        subtype=_WAV_SUBTYPE,
-    )
-    sf.write(
-        _format_with_timestamp(output_dir, timestamp_str, _RIR_NONLINEAR_FN),
-        rir_nonlinear,
-        parameters.fs,
-        subtype=_WAV_SUBTYPE,
-    )
     parameters.save_to_json(_format_with_timestamp(output_dir, timestamp_str, _PARAMETER_FN))
+    for sig, fn in zip(
+        [stimulus_signal, recorded, rir, rir_nonlinear],
+        [_STIMULUS_FN, _RECORDED_FN, _RIR_FN, _RIR_NONLINEAR_FN],
+    ):
+        sf.write(
+            _format_with_timestamp(output_dir, timestamp_str, fn),
+            sig,
+            parameters.fs,
+            subtype=_WAV_SUBTYPE,
+        )
 
 
 def _format_with_timestamp(output_dir: Path, timestamp: str, fn: str):
