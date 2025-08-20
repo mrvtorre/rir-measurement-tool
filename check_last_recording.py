@@ -27,9 +27,10 @@ def check_last_recording(test_signal: NDArray, recorded: NDArray, rir: NDArray, 
     fig, axs = plt.subplots(
         nrows=nrows,
         ncols=2,
-        figsize=(3 * (n_signals), 10),
+        figsize=(18, 10),
         sharex=True,
         sharey=True,
+        squeeze=False,
     )
     for idx in range(n_signals):
         axs[idx // 2, idx % 2].plot(rir[:, idx], linewidth=0.5)
@@ -44,9 +45,10 @@ def check_last_recording(test_signal: NDArray, recorded: NDArray, rir: NDArray, 
     fig, axs = plt.subplots(
         nrows=nrows,
         ncols=2,
-        figsize=(3 * (n_signals), 10),
+        figsize=(18, 10),
         sharex=True,
         sharey=True,
+        squeeze=False,
     )
     for idx in range(n_signals):
         axs[idx // 2, idx % 2].plot(recorded[:, idx], color="b", linewidth=0.5)
@@ -55,14 +57,16 @@ def check_last_recording(test_signal: NDArray, recorded: NDArray, rir: NDArray, 
 
     nperseg = 2**11
     sweepnfft = nperseg
+    noverlap = int(0.5 * nperseg)
     faxis = np.linspace(0, fs, sweepnfft)
     faxis = faxis[0 : int(sweepnfft / 2)]
 
     _, _, spectest = spectrogram(
-        test_signal + 1e-12,
+        np.squeeze(test_signal) + 1e-12,
+        fs=fs,
         nperseg=nperseg,
         nfft=sweepnfft,
-        noverlap=int(0.5 * nperseg),
+        noverlap=noverlap,
         scaling="spectrum",
     )
     spectest = spectest[1::, :] + 1e-12
@@ -73,6 +77,7 @@ def check_last_recording(test_signal: NDArray, recorded: NDArray, rir: NDArray, 
         figsize=(16, 9),
         sharex=True,
         sharey=True,
+        squeeze=False,
     )
     col = 0
     for idx in range(recorded.shape[1]):
@@ -80,9 +85,10 @@ def check_last_recording(test_signal: NDArray, recorded: NDArray, rir: NDArray, 
 
         _, _, specrec = spectrogram(
             recorded[:, idx] + 1e-12,
+            fs=fs,
             nperseg=nperseg,
             nfft=sweepnfft,
-            noverlap=int(0.5 * nperseg),
+            noverlap=noverlap,
             scaling="spectrum",
         )
 
